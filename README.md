@@ -1,2 +1,28 @@
 # music2car
-Script(s) to copy &amp; convert selected audio files to a USB for in-car playback
+
+Script(s) to copy & convert selected audio files to a USB for in-car playback
+
+The rational is that you have a significant number of audio files stored in a lossless (=large files) format and you want to copy selected tracks onto a USB stick for playback on an in-car stereo. Whilst copying the audio files, you also need to convert them to MP3 format because the chances are, your car can't plat FLAC or ALAC - an even if it did they would be too large.
+
+So, the problem splits itself nicely into two.
+
+ 1. Select the tracks we want to copy
+ 2. Convert the selected tracks from lossless to lossy.
+
+As we're on a Mac, we can use the Finder's Tag'ing facility to tag all the albums, tracks, artists we want to copy.
+
+The stratergy is that we use tags to signify the root of the track(s) we want. So if we want all the `Roger Waters` albums we just tag his name. If we just want a single album, we just tag that single folder and if we just want a single track (Hello one-hit-wonder) then we just that individual file.
+
+## Prerequisits
+
+```bash
+brew install tag, ffmpeg
+```
+
+## Usage
+
+```bash
+tag --find '*' /Volumes/Media/Music
+```
+
+
