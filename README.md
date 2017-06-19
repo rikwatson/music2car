@@ -25,4 +25,40 @@ brew install tag, ffmpeg
 tag --find '*' /Volumes/Media/Music
 ```
 
+This lists all the files and folders in the music folder which match the tag specified (in our case we match all of them via the wildcard).
 
+### xargs
+
+Use `-0` with `xargs -0`
+
+```bash
+tag -0 --find 'TODO' . | xargs -0
+```
+
+# Cover Art
+
+Embed `Folder.jpg` as album cover into example.mp3 with `mutagen`:
+
+```python
+from mutagen.mp3 import MP3
+from mutagen.id3 import ID3, APIC, error
+
+audio = MP3('example.mp3', ID3=ID3)
+
+# add ID3 tag if it doesn't exist
+try:
+    audio.add_tags()
+except error:
+    pass
+
+audio.tags.add(
+    APIC(
+        encoding=3, # 3 is for utf-8
+        mime='image/jpeg', # image/jpeg or image/png
+        type=3, # 3 is for the cover image
+        desc=u'Cover',
+        data=open('Folder.jpg').read()
+    )
+)
+audio.save()
+```
