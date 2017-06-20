@@ -62,3 +62,94 @@ audio.tags.add(
 )
 audio.save()
 ```
+
+
+
+ * http://khenriks.github.io/mp3fs/
+ * https://ubuntuforums.org/showthread.php?t=1096665
+
+
+```python
+#!/usr/bin/env python
+
+import os
+import os.path
+import sys
+
+LAME_QUALITY = CBR 320
+
+def escape_quotes(path):
+    return path.replace('"', r'\"')
+
+
+# Gets the tag of a flac file
+def get_flac_tag(flac_file, tag):
+    flac_file = os.path.abspath(flac_file)
+
+    # Make sure the path exists and that the file exists
+    if not os.path.exists(flac_file) or not os.path.isfile(flac_file):
+        return ''
+
+    flac_file = escape_quotes(flac_file)
+
+    f = os.popen('metaflac --show-tag=%s "%s"' % (tag.upper(), flac_file))
+    meta_out = f.read()
+    f.close()
+
+    try:
+        return meta_out[meta_out.find('=') + 1:].strip()
+    except:
+        return ''
+
+
+def encode_mp3(flac_file):
+    mp3_file, ext = os.path.splitext(flac_file)
+    wave_file = escape_quotes(mp3_file + '.wav')
+    mp3_file = escape_quotes(mp3_file + '.mp3')
+    flac_file = flac_file
+
+    # Converts to wave
+    os.system('flac -d -f "%s"' % escape_quotes(flac_file))
+
+    year = get_flac_tag(flac_file, 'DATE')
+    if year: year = year[:5]
+    title = escape_quotes(get_flac_tag(flac_file, 'TITLE'))
+    artist = escape_quotes(get_flac_tag(flac_file, 'ARTIST'))
+    album = escape_quotes(get_flac_tag(flac_file, 'ALBUM'))
+    track_number = int('0' + get_flac_tag(flac_file, 'TRACKNUMBER'))
+    # Missing out GENRE because genre is stored a index in mp3 but as a string in flac
+
+    command = 'lame -b 320 -V %d --tt "%s" --ta "%s" --tl "%s" --ty %s --tn %d "%s" "%s"' \
+                % (LAME_QUALITY, title, artist, album, year, track_number, wave_file, mp3_file)
+
+    # Converts wave to mp3 then deletes wave
+    os.system(command)
+    os.system('rm "%s"' % wave_file)
+
+
+def main(argv):
+    for i in argv:
+        flac_file = i
+
+        if not os.path.exists(flac_file) or not os.path.isfile(flac_file):
+            print '%s is not found.' % (flac_file)
+            sys.exit(1)
+
+        encode_mp3(flac_file)
+
+
+if __name__ == '__main__':
+    if len(sys.argv) < 2:
+        print 'usage: %s <flacfile(s)>' % (sys.argv[0])
+        sys.exit(1)
+
+    main(sys.argv[1:])
+```
+
+
+oops, sorry, I changed it from "2" (I had it set for vbr 2), but apparently it has to be an integer. So use 
+
+LAME_QUALITY = 2
+The "-b 320' part in red is what counts and should give you cbr 320 (just checked it)
+
+
