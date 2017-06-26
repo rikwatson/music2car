@@ -35,6 +35,16 @@ Use `-0` with `xargs -0`
 tag -0 --find 'TODO' . | xargs -0
 ```
 
+# XLD
+
+The following all work
+
+```bash
+./xld -f mp3 -o Tony\ Anderson\ -\ All\ Is\ Not\ Lost.mp3 Tony\ Anderson\ -\ All\ Is\ Not\ Lost.m4a
+./xld -f mp3 -o "03. The Last Refugee.mp3" "03. The Last Refugee.flac"
+./xld -f mp3 08\ -\ Travelin\ On.m4a 08\ -\ Travelin\ On.mp3
+```
+
 # Cover Art
 
 Embed `Folder.jpg` as album cover into example.mp3 with `mutagen`:
